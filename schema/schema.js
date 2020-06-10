@@ -1,12 +1,16 @@
 const graphql = require('graphql');
 
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList } = graphql;
 
 const movies = [
   {id : "1", name: 'Pulp Fiction', genre: 'Crime', directorId: "1"},
   {id : "2", name: '1984', genre: 'Sci-Fi', directorId: "2"},
-  {id : 3, name: 'V For Vendetta', genre: 'Sct-Fi-Triller', directorId: "4"},
-  {id : 4, name: 'Snatch', genre: 'Crime-Comedy', directorId: "3"}, 
+  {id : "3", name: 'V For Vendetta', genre: 'Sct-Fi-Triller', directorId: "4"},
+  {id : "4", name: 'Snatch', genre: 'Crime-Comedy', directorId: "3"}, 
+  {id : "5", name: 'Reselvors Dogs', genre: 'Crime', directorId: "1"},
+  {id : "6", name: 'The hatefull Eight', genre: 'Crime', directorId: "1"},
+  {id : "7", name: 'Inglourses Basters', genre: 'Crime', directorId: "1"},
+  {id : "8", name: 'Lock, smock and two Smoking Barrels', genre: 'Crime-Comedy', directorId: "4"}, 
 ]
 
 const directors = [
@@ -36,7 +40,13 @@ const DirectorType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    age: { type: GraphQLInt },    
+    age: { type: GraphQLInt },
+    movies: { 
+      type: GraphQLList(MovieType) ,
+      resolve(parent, args) {
+        return movies.filter(movie => movie.directorId === parent.id)
+      },
+    },
   }),
 });
 
@@ -57,6 +67,18 @@ const Query = new GraphQLObjectType({
         return directors.find(director => director.id == args.id)
       }
     },
+    movies: {
+      type: new GraphQLList(MovieType),
+      resolve(parent, args) {
+        return movies
+      }
+    },
+    directors: {
+      type: new GraphQLList(DirectorType),
+      resolve(parent, args) {
+        return directors
+      }
+    }
   }
 })
 
