@@ -39,7 +39,10 @@ const MovieType = new GraphQLObjectType({
     director: {
       type: DirectorType,
       resolve(parent, args) {
-        return Directors.findById(parent.directorId)
+        console.log(parent)
+        return Directors.findById(parent.directorID, (err, res) => {
+          return err ? [] : res
+        })
       }
     }
   }),
@@ -55,7 +58,9 @@ const DirectorType = new GraphQLObjectType({
       type: GraphQLList(MovieType) ,
       resolve(parent, args) {
         return Movies.find({
-          directorId: parent.id
+          directorID: parent.id
+        }, (err, res) => {
+          return err ? [] : res
         })
       },
     },
@@ -69,27 +74,34 @@ const Query = new GraphQLObjectType({
       type: MovieType,
       args: { id: { type: GraphQLID }},
       resolve(parent, args) {
-        console.log('id', args.id)
-        Movies.findById(args.id)
+        return Movies.findById(args.id, (err, res) => {
+          return err ? [] : res
+        })
       }
     },
     director: { 
       type: DirectorType,
       args: { id: { type: GraphQLID }},
       resolve(parent, args) {
-        Directors.findById(args.id)
+        return Directors.findById(args.id, (err, res) => {
+          return err ? [] : res
+        })
       }
     },
     movies: {
       type: new GraphQLList(MovieType),
       resolve(parent, args) {
-        Movies.find({})
+        return Movies.find({}, (err, res) => {
+          return err ? [] : res
+        })
       }
     },
     directors: {
       type: new GraphQLList(DirectorType),
       resolve(parent, args) {
-        Directors.find({})
+        return Directors.find({}, (err, res) => {
+          return err ? [] : res
+        })
       }
     }
   }
